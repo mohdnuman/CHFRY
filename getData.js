@@ -8,7 +8,7 @@ const poolAbi=require("./poolAbi.json");
 const crvpoolAbi=require("./crvPoolAbi.json")
 
 const provider = new Web3.providers.HttpProvider(
-  "https://mainnet.infura.io/v3/287af69fca9142f3b1681a93ce4c3afa"
+  "https://mainnet.infura.io/v3/401becb77e3b4ad596ae0ab402a631b6"
 );
 web3 = new Web3(provider);
 
@@ -83,6 +83,9 @@ async function getCRVpoolData(userAddress){
     let poolInfo=await masterInstance.methods.poolInfos(1).call();
     let tokenContract=poolInfo.token;
 
+    let userInfo=await masterInstance.methods.userInfos(1,userAddress).call();
+    let balance=userInfo.amount;
+
     let tokenInstance=new web3.eth.Contract(crvpoolAbi,tokenContract);
     let token0amount=await tokenInstance.methods.balances(0).call();
     let token1amount=await tokenInstance.methods.balances(1).call();
@@ -97,7 +100,7 @@ async function getCRVpoolData(userAddress){
     let decimals0=await token0instance.methods.decimals().call();
     let decimals1=await token1instance.methods.decimals().call();
 
-    if(token0amount!=0 && token1amount!=0)
+    if(token0amount!=0 && token1amount!=0 && balance!=0)
     {
         console.log(symbol0,'+',symbol1,(token0amount/10**decimals0).toFixed(2),"+",(token1amount/10**decimals1).toFixed(2));
         console.log("rewards:",(rewards/10**decimals0).toFixed(2));
@@ -127,7 +130,7 @@ async function getdStakeData(userAddress,index){
     }
 }
 
-const userAddress="0x7f6e250c50036320f40b02e3bbbdac4d05da1d60";
+const userAddress="0xa97aaf7a996bcfec0fb02e9645a0458b83870d2f";
 const Lendingaddresses=["0xd1ffa2cbAE34FF85CeFecdAb0b33E7B1DC19024b","0x87F6fAA87358B628498E8DCD4E30b0378fEaFD07","0x7E271Eb034dFc47B041ADf74b24Fb88E687abA9C"];
 
 for(let i=0;i<Lendingaddresses.length;i++){
